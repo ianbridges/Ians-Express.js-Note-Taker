@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const express = require('require');
+const express = require('express');
 const PORT = process.env.PORT || 443;
 
 const app = express();
@@ -35,8 +35,15 @@ function validateNote(note) {
     return true;
 }
 
-
-
+function deleteNote(id, notesArray) {
+    notesArray = notes.filter(note => note.id != id);
+    fs.writeFileSync(
+        path.join(__dirname, './Develop/db/db.json'),
+        JSON.stringify ({ notes: notesArray }, null, 2)
+    );
+    notes = notesArray;
+    return notes;
+}
 
 
 app.get('/api/notes', (req, res) => {
@@ -51,6 +58,11 @@ app.post('/api/notes', (req, res) => {
         createNewNote(req.body, notes);
         res.json(req.body);
     }
+});
+
+app.delete('/api/notes/:id', (req, res) => {
+    deleteNote(req.params.id, notes)
+    res.json(notes);
 });
 
 app.get('/notes', (req, res) => {

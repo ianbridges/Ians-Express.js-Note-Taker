@@ -23,7 +23,19 @@ app.use(express.json());
 
 
 
+app.get('/api/notes', (req, res) => {
+    res.json(notes);
+});
 
+app.post('/api/notes', (req, res) => {
+    req.body.id = notes.length;
+    if (!validateNote(req.body)) {
+        res.status(400).send('Fix note format')
+    } else {
+        createNewNote(req.body, notes);
+        res.json(req.body);
+    }
+});
 
 app.get('/notes', (req, res) => {
     res.sendFile(path.join(__dirname, './Develop/public/notes.html'));

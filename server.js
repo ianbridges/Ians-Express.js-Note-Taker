@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 443;
 
 const app = express();
 var { notes } = require('./Develop/db/db.json');
+console.log("this" + (notes))
 const { networkInterfaces } = require('os');
 
 app.use(express.static('Develop/public'));

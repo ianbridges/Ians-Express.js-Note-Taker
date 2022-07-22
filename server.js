@@ -1,3 +1,4 @@
+/* Setup Start */
 const fs = require('fs');
 const path = require('path');
 
@@ -6,7 +7,7 @@ const PORT = process.env.PORT || 443;
 
 const app = express();
 var { notes } = require('./Develop/db/db.json');
-console.log("this" + (notes))
+
 const { networkInterfaces } = require('os');
 
 app.use(express.static('Develop/public'));
@@ -14,8 +15,10 @@ app.use(express.static('Develop/public'));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
+/* Setup End */
 
 
+/* Creates a New Entry */
 function createNewNote(body, notesArray) {
     const note = body;
     notesArray.push(note);
@@ -26,6 +29,7 @@ function createNewNote(body, notesArray) {
     return notes;
 }
 
+/* Validates that Data is Correct Format */
 function validateNote(note) {
     if (!note.title || typeof note.title !== 'string') {
         return false;
@@ -36,6 +40,8 @@ function validateNote(note) {
     return true;
 }
 
+
+/* Delete Functions Start */
 function deleteNote(id, notesArray) {
     notesArray = notes.filter(note => note.id != id);
     fs.writeFileSync(
@@ -46,7 +52,14 @@ function deleteNote(id, notesArray) {
     return notes;
 }
 
+app.delete('/api/notes/:id', (req, res) => {
+    deleteNote(req.params.id, notes)
+    res.json(notes);
+});
+/* Delete Functions End */
 
+
+/* Get and Set Functions Start */
 app.get('/api/notes', (req, res) => {
     res.json(notes);
 });
@@ -60,12 +73,10 @@ app.post('/api/notes', (req, res) => {
         res.json(req.body);
     }
 });
+/* Get and Set Functions End */
 
-app.delete('/api/notes/:id', (req, res) => {
-    deleteNote(req.params.id, notes)
-    res.json(notes);
-});
 
+/* Listens for browser requests Start */
 app.get('/notes', (req, res) => {
     res.sendFile(path.join(__dirname, './Develop/public/notes.html'));
 });
@@ -77,3 +88,4 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log('API server now on port ${PORT}!');
 });
+/* Listens for browser requests End */
